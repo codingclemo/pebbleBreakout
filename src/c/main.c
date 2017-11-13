@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "splash_window.h"
 #include "initials_window.h"
+#include "highscore_window.h"
 
 void launch_initials_window(){
 	window_stack_push(initials_window_get_window(), true);
@@ -13,9 +14,10 @@ int main(){
 	/* Create windows */
 	splash_window_create();
 	initials_window_create();
+
 	
 	window_stack_push(splash_window_get_window(), true);
-	app_timer_register(1000, launch_initials_window, NULL); // sets display time for splash window before starting initials window
+	app_timer_register(3000, launch_initials_window, NULL); // sets display time for splash window before starting initials window
 	
 	
 	/* Keep the app running */
