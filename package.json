@@ -1,0 +1,31 @@
+{
+    "author": "clemens.kozmich@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "breakout",
+    "pebble": {
+        "displayName": "Breakout",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/breakout_icon.png",
+                    "name": "IMAGE_SPLASH",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "basalt"
+        ],
+        "uuid": "23e0dfe3-f08d-46b9-ba33-6889b564764c",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
