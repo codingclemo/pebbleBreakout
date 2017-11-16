@@ -45,6 +45,13 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		text_layer_set_text(initials_title, "Name saved!");
 		text_layer_set_text_color(user_initials, GColorRed);
 		text_layer_destroy(indicator);
+		
+		int user_points = 9;
+		node_ptr user_data;
+		user_data = create_node(username, user_points);
+		highscore_list = NULL;
+		insert_node(highscore_list, user_data);
+		
 		app_timer_register(2500, launch_highscore_window, NULL);
 	} else {
 		charPosition ++;
