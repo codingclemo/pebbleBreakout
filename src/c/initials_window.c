@@ -3,6 +3,7 @@
 #include <string.h>
 #include "initials_window.h"
 #include "highscore_window.h"
+#include "main.h"
 
 Window *initials_window;
 TextLayer *initials_title;
@@ -46,9 +47,32 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		text_layer_set_text_color(user_initials, GColorRed);
 		text_layer_destroy(indicator);
 		/* save the name and score in Highscore list */
-		persist_write_string(1, username); // save current player name
-		int user_points = 9; //hardcoded for now
-		persist_write_int(2, user_points); // save current player points // needs to be saved after game
+
+		// TODO: insert sorted by points
+		if (cntPlayersInHighscoreList < HIGHSCORE_LENGTH) {
+			cntPlayersInHighscoreList++;
+
+			APP_LOG(APP_LOG_LEVEL_DEBUG, " username:   %s", username);
+			APP_LOG(APP_LOG_LEVEL_DEBUG, "select_click_handler() cntPlayersInHighscoreList = %d ", cntPlayersInHighscoreList);
+
+			// copy the username to the "name" filed of the struct 
+			for(int i = 0; i < 3; i++) {
+				highscores[cntPlayersInHighscoreList].name[i] = username[i];
+			}
+			highscores[cntPlayersInHighscoreList].name[4] = '\0';
+
+			// dummy value 
+			highscores[cntPlayersInHighscoreList].points = 12;
+
+			APP_LOG(APP_LOG_LEVEL_DEBUG, "initals final values: ");
+			APP_LOG(APP_LOG_LEVEL_DEBUG, "player name:   %s", highscores[cntPlayersInHighscoreList].name);
+			APP_LOG(APP_LOG_LEVEL_DEBUG, "player points:   %d", highscores[cntPlayersInHighscoreList].points);
+
+		}
+
+		// persist_write_string(1, username); // save current player name
+		// int user_points = 9; //hardcoded for now
+		// persist_write_int(2, user_points); // save current player points // needs to be saved after game
 		
 		//node_ptr user_data;
 		//user_data = create_node(username, user_points);
@@ -85,7 +109,7 @@ static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
 
 static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
-	window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
   window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
