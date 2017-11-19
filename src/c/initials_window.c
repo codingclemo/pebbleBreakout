@@ -41,16 +41,19 @@ static void back_click_handler(ClickRecognizerRef recognizer, void *context) {
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   if (charPosition == 2) {
-		/* save the name and score in Highscore list */
+		/* adapt display */
 		text_layer_set_text(initials_title, "Name saved!");
 		text_layer_set_text_color(user_initials, GColorRed);
 		text_layer_destroy(indicator);
+		/* save the name and score in Highscore list */
+		persist_write_string(1, username); // save current player name
+		int user_points = 9; //hardcoded for now
+		persist_write_int(2, user_points); // save current player points // needs to be saved after game
 		
-		int user_points = 9;
-		node_ptr user_data;
-		user_data = create_node(username, user_points);
-		highscore_list = NULL;
-		insert_node(highscore_list, user_data);
+		//node_ptr user_data;
+		//user_data = create_node(username, user_points);
+		//highscore_list = NULL;
+		//insert_node(highscore_list, user_data);
 		
 		app_timer_register(2500, launch_highscore_window, NULL);
 	} else {

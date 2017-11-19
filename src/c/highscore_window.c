@@ -16,16 +16,16 @@ TextLayer *highscore_title;
 TextLayer *highscore_text;
 
 
-/*** Datastructure Highscore list 
+/*** Datastructure Highscore list ***/
 typedef struct player_node* node_ptr;
 typedef struct player_node {
 	char name[3];
 	int points;
 	node_ptr next;
-} player_node;***/
+} player_node;
 
 typedef player_node* list_ptr;
-//list_ptr highscore_list;
+list_ptr highscore_list;
 
 /*** Datastructure functions ***/
 node_ptr create_node(char *p_name, int points){
@@ -79,7 +79,7 @@ void insert_node(list_ptr l, player_node* n){
 }
 
 void write_highscores(list_ptr l){
-	node_ptr n;
+	/*node_ptr n;
 	
 	int player_position = 1;
 	int i = 0;
@@ -115,7 +115,7 @@ void write_highscores(list_ptr l){
 		
 		n = n->next;		
 	}
-	highscore_list_text[i] = '\0';
+	highscore_list_text[i] = '\0';*/
 }
 
 void import_highscores(list_ptr l){
@@ -125,19 +125,38 @@ void import_highscores(list_ptr l){
 void save_highscores(list_ptr l){
 	//rsist_write_int(NUM_DRINKS_PKEY, s_num_drinks);
 }
- 
+
+/*
+static void save() {
+  uint16_t shapes_per_chunk = PERSIST_DATA_MAX_LENGTH / sizeof(Shape);
+  uint16_t n_chunks = (n_shapes-1) / shapes_per_chunk + 1;
+  persist_write_int(1, n_shapes);
+  for (uint16_t i = 0; i<n_chunks; i++) {
+    uint16_t n = MIN(shapes_per_chunk, n_shapes - i * shapes_per_chunk);
+    persist_write_data(100 + i, &shapes[i*shapes_per_chunk], sizeof(Shape) * n);
+  }
+  if (current_shape != NULL) {
+    persist_write_data(2, current_shape, sizeof(Shape));
+  }
+  persist_write_int(3, score);
+  persist_write_bool(4, game_is_over);
+}
+*/
+
  
 /*** Window handling ***/
 void highscore_window_load(Window *window){
 	Layer *window_layer = window_get_root_layer(window);
 	
-	highscore_title = text_layer_create(GRect(0,10,144,50));
+	highscore_title = text_layer_create(GRect(0,10,144,20));
+	text_layer_set_background_color(highscore_title, GColorOrange);
+	text_layer_set_text_color(highscore_title, GColorWhite);
 	text_layer_set_text(highscore_title, "HIGHSCORES");
 	text_layer_set_text_alignment(highscore_title, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_title));
 	
 	highscore_text = text_layer_create(GRect(0,50,144,160));
-	text_layer_set_text(highscore_text, highscore_list_text); //"1. name  23\n2. name  9"
+	text_layer_set_text(highscore_text, "1. name  23\n2. name  9"); //"1. name  23\n2. name  9"
 	text_layer_set_text_alignment(highscore_text, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_text));
 }
