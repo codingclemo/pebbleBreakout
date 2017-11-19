@@ -1,147 +1,85 @@
 #include <pebble.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "highscore_window.h"
 #include "initials_window.h"
 
-#define POINTS_PLAYERONE 3
-#define POINTS_PLAYERTWO 2
-#define POINTS_PLAYERTHREE 1
-#define NAME_PLAYERONE "plo"
-#define NAME_PLAYERTWO "plt"
-#define NAME_PLAYERTHREE "pth"
+#define HIGHSCORE_LENGTH 5
+#define HS_NAMES 101
+#define HS_POINTS 111
 
-char highscore_list_text[60];
+char highscore_list_text[100];
 
 Window *highscore_window;
 TextLayer *highscore_title;
 TextLayer *highscore_text;
 
 
-/*** Datastructure Highscore list ***/
-typedef struct player_node* node_ptr;
-typedef struct player_node {
-	char name[3];
-	int points;
-	node_ptr next;
-} player_node;
+char* names[HIGHSCORE_LENGTH];
+char* points[HIGHSCORE_LENGTH];
 
-typedef player_node* list_ptr;
-list_ptr highscore_list;
-
-/*** Datastructure functions ***/
-node_ptr create_node(char *p_name, int points){
-	node_ptr n = NULL;
-	//n = (player_node*)malloc(sizeof(player_node));
-	for(int i = 0; i < 3; i++){
-		n->name[i] = p_name[i];
-	}
-	n->points = points;
-	n->next = NULL;
-	return n;	
-}
-
-void destroy_node(player_node **n){
-	if(*n == NULL)
-		return;
+void import_highscores(){
+	char buffer[4];
+	int stored_points;
+	persist_write_string(103, "du3");
+	persist_write_int(113, 7);
 	
-	free(*n);
-	*n = NULL;
-}
-
-void insert_node(list_ptr l, player_node* n){
-	list_ptr head;
-	head = l;
-	if (head == NULL){
-		head = n;
-	} 
-	else {
-		player_node *current, *previous;
-		current = (player_node*)malloc(sizeof(player_node));
-		previous = (player_node*)malloc(sizeof(player_node));
-		current = head;
-		previous = NULL;
-		
-		while(current != NULL && current->points >= n->points){
-			previous = current;
-			current = current->next;
+	for (int i = 1; i <= HIGHSCORE_LENGTH; i++){
+		/* Get name */
+		if (persist_exists(100+i)) {
+			persist_read_string(100+i, buffer, sizeof(buffer));
+		} else {
+			buffer = "ddd";
 		}
-		if (current == head){
-			n->next = head;
-			head = n;	
-		}
-		else if(current == NULL){
-			previous->next = n;
-		}
-		else {
-			n->next = current;
-			previous->next = n;
-		}
+		names[i] = buffer;
+		/* Get points */
+		stored_points = persist_exists(110+i) ? persist_read_int(110+i) : 0;	
+		//stored_points = persist_read_int(110+i);
+		snprintf(buffer, 10, "%d", stored_points);
+		points[i] = buffer;
 	}
 }
 
-void write_highscores(list_ptr l){
-	/*node_ptr n;
+
+void update_highscores(){
+
+		
+}
+
+void write_highscores(){
+	/*persist_write_string(101, "du1");
+	persist_write_string(102, "du2");
+	persist_write_string(103, "du3");
+	persist_write_string(104, "du4");
+	persist_write_string(105, "du5");
+	persist_write_int(111, 9);
+	persist_write_int(112, 8);
+	persist_write_int(113, 7);
+	persist_write_int(114, 6);
+	persist_write_int(115, 5);*/
 	
-	int player_position = 1;
-	int i = 0;
+	int text_length = sizeof(highscore_list_text);
+	char text_buffer[10];
+	
+	//names[1] = "wtf";
+	for (int i = 1; i <= HIGHSCORE_LENGTH; i++){
+		snprintf(text_buffer, 10, "%d", i);
+		strncat(highscore_list_text, text_buffer, text_length);
+		strncat(highscore_list_text, ".  ", text_length);
 
-	n = l;
-	while (n != NULL){
-		//insert position
-		highscore_list_text[i] = player_position;
-		i++;
-		player_position++;
-		//insert spaces
-		highscore_list_text[i] = ' ';
-		i++;
-		highscore_list_text[i] = ' ';
-		i++;
-		//insert name
-		for (int t = 0; t < 3; t++){
-			highscore_list_text[i] = n->name[t];
-			i++;
-		}
-		//insert spaces
-		highscore_list_text[i] = ' ';
-		i++;
-		highscore_list_text[i] = ' ';
-		i++;
-		//insert points
-		// need to check for points > 10 and > 100 as well...maybe
-		highscore_list_text[i] = n->points;
-		i++;
-		//insert return
-		highscore_list_text[i] = '\n';
-		i++;
-		
-		n = n->next;		
+		strncat(highscore_list_text, names[i], text_length);
+		strncat(highscore_list_text, "  ", text_length);
+		strncat(highscore_list_text, points[i], text_length);
+		strncat(highscore_list_text, "\n", text_length);	
 	}
-	highscore_list_text[i] = '\0';*/
+	
 }
 
-void import_highscores(list_ptr l){
-	//num_drinks = persist_exists(NUM_DRINKS_PKEY) ? persist_read_int(NUM_DRINKS_PKEY) : NUM_DRINKS_DEFAULT;
+void save_highscores(){
+	//persist_write_int(NUM_DRINKS_PKEY, s_num_drinks);
 }
 
-void save_highscores(list_ptr l){
-	//rsist_write_int(NUM_DRINKS_PKEY, s_num_drinks);
-}
-
-/*
-static void save() {
-  uint16_t shapes_per_chunk = PERSIST_DATA_MAX_LENGTH / sizeof(Shape);
-  uint16_t n_chunks = (n_shapes-1) / shapes_per_chunk + 1;
-  persist_write_int(1, n_shapes);
-  for (uint16_t i = 0; i<n_chunks; i++) {
-    uint16_t n = MIN(shapes_per_chunk, n_shapes - i * shapes_per_chunk);
-    persist_write_data(100 + i, &shapes[i*shapes_per_chunk], sizeof(Shape) * n);
-  }
-  if (current_shape != NULL) {
-    persist_write_data(2, current_shape, sizeof(Shape));
-  }
-  persist_write_int(3, score);
-  persist_write_bool(4, game_is_over);
-}
-*/
 
  
 /*** Window handling ***/
@@ -155,8 +93,11 @@ void highscore_window_load(Window *window){
 	text_layer_set_text_alignment(highscore_title, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_title));
 	
+	import_highscores();
+	write_highscores();
 	highscore_text = text_layer_create(GRect(0,50,144,160));
-	text_layer_set_text(highscore_text, "1. name  23\n2. name  9"); //"1. name  23\n2. name  9"
+	//text_layer_set_text(highscore_text, "1. name  23\n2. name  9"); //"1. name  23\n2. name  9"
+	text_layer_set_text(highscore_text, highscore_list_text); //"1. name  23\n2. name  9"
 	text_layer_set_text_alignment(highscore_text, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_text));
 }
