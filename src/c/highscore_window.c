@@ -29,10 +29,12 @@ void import_highscores(){
 		/* Get name */
 		if (persist_exists(100+i)) {
 			persist_read_string(100+i, buffer, sizeof(buffer));
+			names[i] = buffer;
 		} else {
-			buffer = "ddd";
+			//buffer = "ddd";
+			names[i] = "ddd";
 		}
-		names[i] = buffer;
+		//names[i] = buffer;
 		/* Get points */
 		stored_points = persist_exists(110+i) ? persist_read_int(110+i) : 0;	
 		//stored_points = persist_read_int(110+i);
