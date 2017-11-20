@@ -5,6 +5,11 @@
 
 #define MAX_BLOCKS 100
 
+#define DELTA_X_STEEP  2
+#define DELTA_Y_STEEP  5
+
+#define DELTA_X_FLAT  3
+#define DELTA_Y_FLAT  4
 
 static Window *game_window;
 static Layer *canvas_layer;
@@ -98,25 +103,45 @@ static void checkBallThingiCollision() {
             // there are 4 zones: left outer, left inner, right inner, right outer
             // and depending on the zone, the reflection angle is different
             if (ball.m_y >= (moving_thingi.m_y)) {
-                // right zone
-                if (ball.m_y >= (moving_thingi.m_y + moving_thingi.h_2 / 2)) {
-                    // right outer zone -> "flat" angle
-
-                } else {
-                    // right inner  zone -> "steep" angle
-                }
-            } else {
                 // left zone
-                if (ball.m_y <= (moving_thingi.m_y - moving_thingi.h_2 / 2)) {
+                if (ball.m_y >= (moving_thingi.m_y + moving_thingi.h_2 / 2)) {
                     // left outer zone -> "flat" angle
-
+                    if (ball.direction.dy > 0) {
+                        ball.direction.dx *= -1;
+                    } else {
+                        ball.direction.dx *= -1;
+                        ball.direction.dy *= -1;
+                    }
                 } else {
                     // left inner  zone -> "steep" angle
+                    if (ball.direction.dy > 0) {
+                        ball.direction.dx *= -1;
+                    } else {
+                        ball.direction.dx *= -1;
+                        ball.direction.dy *= -1;
+                    }
+                }
+            } else {
+                // right zone
+                if (ball.m_y <= (moving_thingi.m_y - moving_thingi.h_2 / 2)) {
+                    // left outer zone -> "flat" angle
+                    if (ball.direction.dy > 0) {
+                        ball.direction.dx *= -1;
+                        ball.direction.dy *= -1;
+                    } else {
+                        ball.direction.dx *= -1;
+                    }
+                } else {
+                    // right inner  zone -> "steep" angle
+                    if (ball.direction.dy > 0) {
+                        ball.direction.dx *= -1;
+                        ball.direction.dy *= -1;
+                    } else {
+                        ball.direction.dx *= -1;
+                    }
                 }
             }
-
-
-            ball.direction.dx *= -1;
+            //ball.direction.dx *= -1;
             score--;
         }
     }
