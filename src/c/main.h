@@ -9,8 +9,7 @@ typedef struct GameResult {
     int points;         // or int32_t ?? how to convert this to a string in highscore_window?
 } GameResult;
 
-GameResult highscores[HIGHSCORE_LENGTH];
-int cntPlayersInHighscoreList; 
-int current_player_points;
-char current_player_name[5];
-
+extern GameResult highscores[HIGHSCORE_LENGTH];
+extern int cntPlayersInHighscoreList; 
+extern int current_player_points;
+extern char current_player_name[5];

@@ -16,13 +16,30 @@ TextLayer *highscore_text;
 
 char highscore_list_text[100];
 
+// TODO: REMOVE DEBUG ONLY - write data to APP LOG
+void DEBUG_ARRAY() {
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "current content of the array 'highscores'  " );
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "--------------------------- " );
+	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "%d.  name %s, points: %d", i, highscores[i].name, highscores[i].points);
+	}
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "--------------------------- " );
+}
+
 void import_highscores() {
-	cntPlayersInHighscoreList = 0; 
+	cntPlayersInHighscoreList = -1; 
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'import_highscores': cntPlayersInHighscoreList should be --1 is = %d", cntPlayersInHighscoreList);
+	if (!persist_exists(HS_CNT_PLAYERS)) {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'import_highscores': no high scores in persist storage found");
+		return;
+	}
 	cntPlayersInHighscoreList = persist_read_int(HS_CNT_PLAYERS);
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'import_highscores': value from persist_read_int is  cntPlayersInHighscoreList = %d", cntPlayersInHighscoreList);
 	
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'import_highscores' reading player %d from storage ", i);
 		if (!persist_exists(HS_POINTS + i) || !persist_exists(HS_NAMES + i)) {
-			APP_LOG(APP_LOG_LEVEL_ERROR, "Error: there should be points/names in the storage");
+			APP_LOG(APP_LOG_LEVEL_ERROR, "'import_highscores' Error: there should be points/names in the storage");
 			//persist_write_int(HS_POINTS + i, 9);
 			//persist_write_data(HS_NAMES + i, "dum", 4);
 			//highscores[i].points = 0;
@@ -30,56 +47,34 @@ void import_highscores() {
 		} else {
 			highscores[i].points = persist_read_int(HS_POINTS + i);
 			int result = persist_read_data(HS_NAMES + i, &highscores[i].name, 4);
+			APP_LOG(APP_LOG_LEVEL_DEBUG, "'import_highscores'  player %d name = %s, points = %d", i,highscores[i].name, highscores[i].points);
 			if (result != 4) {
-				APP_LOG(APP_LOG_LEVEL_ERROR, "Error READING from storage");
+				APP_LOG(APP_LOG_LEVEL_ERROR, "'import_highscores'  Error READING from storage");
 			}
 		}
 	}
-
-	// TODO: REMOVE DEBUG ONLY - write data to APP LOG
-	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Player name %s, points: %d", highscores[i].name, highscores[i].points);
-	}
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'import_highscores'  array highscores");
+	DEBUG_ARRAY();
 }
 
-void insert_new_score() {
-	//GameResult temp_list[HIGHSCORE_LENGTH];
-	for (int i = 0; i < cntPlayersInHighscoreList; i++) {
-		if (highscores[i].points < current_player_points) {
-			// increase length of highscore list if necessary
-			if (cntPlayersInHighscoreList < HIGHSCORE_LENGTH) { cntPlayersInHighscoreList++; }
-			// decrease position of players with lower score
-			for (int j = cntPlayersInHighscoreList -1; j > i; j--) {
-				highscores[j].points = highscores[j-1].points;
-				for(int k = 0; k < 3; k++) {
-					highscores[j].name[k] = current_player_name[k];
-				}
-				highscores[j].name[4] = '\0';
-			}
-			// insert new score and playername
-			highscores[i].points = current_player_points;
-			for(int k = 0; k < 3; k++) {
-				highscores[i].name[k] = current_player_name[k];
-			}
-			highscores[i].name[4] = '\0';
-			i = cntPlayersInHighscoreList; // exit for loop
-		}
-	}
-	
-}
+
 
 void create_single_highscore_string() {
 	// create a single string from the array of players
 	highscore_list_text[0] = ' ';
 	highscore_list_text[1] = '\0';
 
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'create_single_highscore_string'  array highscores");
+	DEBUG_ARRAY();
+
 	char seperator[3] = ": ";
 	char points[12];
 	char newLine[2] = "\n";
 	char position[2];
 
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "create_single_highscore_string() cntPlayersInHighscoreList = %d ", cntPlayersInHighscoreList);
-	
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "create_single_highscore_string() (int)cntPlayersInHighscoreList = %d ", (int)cntPlayersInHighscoreList);
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "create_single_highscore_string() (int)cntPlayersInHighscoreList = %i ", (int)cntPlayersInHighscoreList);
+
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
 		// copy name of the player into "highscore_list_text"
 		snprintf(position, sizeof(position), "%d", i+1);
@@ -88,24 +83,26 @@ void create_single_highscore_string() {
 		strcat(highscore_list_text, highscores[i].name);
 		strcat(highscore_list_text, seperator);
 
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "1 full highscore_list_text string:   %s", highscore_list_text);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "1 highscores[i].nameg:   %s", highscores[i].name);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "1 seperator:   %s", seperator);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'create_single_highscore_string' 1/2 full highscore_list_text string:   %s", highscore_list_text);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'create_single_highscore_string' 1/2 highscores[i].nameg:   %s", highscores[i].name);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'create_single_highscore_string' 1/2 seperator:   %s", seperator);
 
 		// copy points of the player into "highscore_list_text"
 		snprintf(points, sizeof(points), "%d", highscores[i].points);	
 		strcat(highscore_list_text, points);
 		
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "2 full highscore_list_text string:   %s", highscore_list_text);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'create_single_highscore_string' 2/2   full highscore_list_text string:   %s", highscore_list_text);
 
 		// add new line to  "highscore_list_text"		 
 		strcat(highscore_list_text, newLine);
 	}
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "END full highscore_list_text string:   %s", highscore_list_text);
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'create_single_highscore_string' END full highscore_list_text string:   %s", highscore_list_text);
 }
 
 
-void write_highscores(){
+void write_highscores() {
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'write_highscores'  array highscores");
+	DEBUG_ARRAY();
 	// save, how many players are in the high score list 	
 	persist_write_int(HS_CNT_PLAYERS, cntPlayersInHighscoreList);
 
@@ -153,7 +150,7 @@ void highscore_window_load(Window *window){
 	layer_add_child(window_layer, text_layer_get_layer(highscore_title));
 	
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "highscore_window_load()  calling create_single_highscore_string()");
-	insert_new_score();
+	// insert_new_score();
 	create_single_highscore_string();
 	write_highscores();
 	

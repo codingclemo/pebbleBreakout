@@ -40,6 +40,44 @@ static void back_click_handler(ClickRecognizerRef recognizer, void *context) {
 	}
 }
 
+void insert_new_score(char *name, int points) {
+	cntPlayersInHighscoreList++;
+	if (cntPlayersInHighscoreList > HIGHSCORE_LENGTH-1) {
+		cntPlayersInHighscoreList = HIGHSCORE_LENGTH-1; 
+	}
+
+	// find the index in the array, where we want to insert the new player/score
+	int idx = 0;
+	while (highscores[idx].points > points && idx < HIGHSCORE_LENGTH && idx <= cntPlayersInHighscoreList)  {
+		idx++; 
+	}
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' idx= %d     cntPlayersInHighscoreList = %d   ", idx, cntPlayersInHighscoreList);
+
+	if (idx >= HIGHSCORE_LENGTH) {
+		// we only have room for 5 highscores - we are done here (play better next time buddy!)
+		return; 
+	}
+	// if the new score is the last entry in the array, we dont have to move
+	// the other entries - otherwise: move all entries down by 1
+	for (int i = HIGHSCORE_LENGTH-2; i >= idx; i--) {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' moving entry i = %d down to i+1 = %d  ", i, i+1);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' moving name %s down ", highscores[i].name);
+
+		highscores[i+1].points = highscores[i].points;
+		for (int m = 0; m < 3; m++) {
+			highscores[i+1].name[m] = highscores[i].name[m];
+		}
+		// better safe than sorry
+		highscores[i].name[4] = '\0';
+		highscores[i+1].name[4] = '\0';
+	}
+	// insert new entry for highscore 
+	highscores[idx].points = points;
+	for (int m = 0; m < 3; m++) {
+		highscores[idx].name[m] = name[m];
+	}
+}
+
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   if (charPosition == 2) {
 		/* adapt display */
@@ -48,39 +86,16 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		text_layer_destroy(indicator);
 		
 		/* save the name and score in Highscore list */
+		// TODO remove this line, when the game is finally implemented 
 		current_player_points = 12 + cntPlayersInHighscoreList;
-		for(int j = 0; j < 3; j++) {
-			current_player_name[j] = username[j];
-		}
-		current_player_name[4] = '\0';
-		/*
-		// TODO: insert sorted by points
-		for (int k = 0; k < HIGHSCORE_LENGTH) {
-			if (highscores[k].points)
-		}
-		
-		
-		if (cntPlayersInHighscoreList < HIGHSCORE_LENGTH) {
-			cntPlayersInHighscoreList++;
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' insert new highscore with  username:   %s", username);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' and points =   %d", current_player_points);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' cntPlayersInHighscoreList =   %d", cntPlayersInHighscoreList);
 
-			APP_LOG(APP_LOG_LEVEL_DEBUG, " username:   %s", username);
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "select_click_handler() cntPlayersInHighscoreList = %d ", cntPlayersInHighscoreList);
+		insert_new_score(username, current_player_points);
 
-			// copy the username to the "name" filed of the struct 
-			for(int i = 0; i < 3; i++) {
-				highscores[cntPlayersInHighscoreList].name[i] = username[i];
-			}
-			highscores[cntPlayersInHighscoreList].name[4] = '\0';
-
-			// dummy value 
-			highscores[cntPlayersInHighscoreList].points = 12 + cntPlayersInHighscoreList;
-
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "initals final values: ");
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "player name:   %s", highscores[cntPlayersInHighscoreList].name);
-			APP_LOG(APP_LOG_LEVEL_DEBUG, "player points:   %d", highscores[cntPlayersInHighscoreList].points);
-		}
-		*/
 		app_timer_register(500, launch_highscore_window, NULL);
+
 	} else {
 		charPosition ++;
 		setArrow();
@@ -138,8 +153,6 @@ void initials_window_load(Window *window){
 	text_layer_set_text_color(indicator, GColorRed);
 	text_layer_set_text_alignment(indicator, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(indicator));
-
-
 }
 
 void initials_window_unload(Window *window){
