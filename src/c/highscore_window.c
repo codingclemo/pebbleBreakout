@@ -21,7 +21,6 @@ void import_highscores() {
 	cntPlayersInHighscoreList = persist_read_int(HS_CNT_PLAYERS);
 
 //<<<<<<< use_global_variable_for_highscore
-	//names[1] = "wtf";
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
 		if (!persist_exists(HS_POINTS + i) || !persist_exists(HS_NAMES + i)) {
 			APP_LOG(APP_LOG_LEVEL_ERROR, "Error: there should be points/names in the storage");
@@ -32,7 +31,9 @@ void import_highscores() {
 				APP_LOG(APP_LOG_LEVEL_ERROR, "Error READING from storage");
 			}
 		}
-//=======
+		
+		
+/*/=======
 void import_highscores(){
 	char buffer[4];
 	int stored_points;
@@ -40,7 +41,7 @@ void import_highscores(){
 	persist_write_int(113, 7);
 	
 	for (int i = 1; i <= HIGHSCORE_LENGTH; i++){
-		/* Get name */
+		// Get name 
 		if (persist_exists(100+i)) {
 			persist_read_string(100+i, buffer, sizeof(buffer));
 			names[i] = buffer;
@@ -49,12 +50,12 @@ void import_highscores(){
 			names[i] = "ddd";
 		}
 		//names[i] = buffer;
-		/* Get points */
+		// Get points 
 		stored_points = persist_exists(110+i) ? persist_read_int(110+i) : 0;	
 		//stored_points = persist_read_int(110+i);
 		snprintf(buffer, 10, "%d", stored_points);
 		points[i] = buffer;
-//>>>>>>> master
+//>>>>>>> master */
 	}
 
 	// TODO: REMOVE DEBUG ONLY - write data to APP LOG
@@ -71,11 +72,15 @@ void create_single_highscore_string() {
 	char seperator[3] = ": ";
 	char points[12];
 	char newLine[2] = "\n";
+	char position[2];
 
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "create_single_highscore_string() cntPlayersInHighscoreList = %d ", cntPlayersInHighscoreList);
 	
-	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
+	for (int i = 1; i <= cntPlayersInHighscoreList; i++) {
 		// copy name of the player into "highscore_list_text"
+		snprintf(position, sizeof(position), "%d", i);
+		strcat(highscore_list_text, position);
+		strcat(highscore_list_text, seperator);
 		strcat(highscore_list_text, highscores[i].name);
 		strcat(highscore_list_text, seperator);
 
@@ -96,11 +101,6 @@ void create_single_highscore_string() {
 }
 
 
-void update_highscores(){
-
-		
-}
-
 void write_highscores(){
 	// save, how many players are in the high score list 	
 	persist_write_int(HS_CNT_PLAYERS, cntPlayersInHighscoreList);
@@ -114,12 +114,33 @@ void write_highscores(){
 	}
 }
 
-// void save_highscores(){
-// 	//persist_write_int(NUM_DRINKS_PKEY, s_num_drinks);
-// }
 
 
- 
+
+static void back_click_handler(ClickRecognizerRef recognizer, void *context) {
+//	highscore_window_unload(highscore_window);
+	highscore_window_destroy();
+}
+
+static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
+	
+}
+
+static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
+	
+}
+
+static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
+	
+}
+
+static void click_config_provider(void *context) {
+  window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
+  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
+  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
+  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+}
+
 /*** Window handling ***/
 void highscore_window_load(Window *window){
 	Layer *window_layer = window_get_root_layer(window);
@@ -131,15 +152,11 @@ void highscore_window_load(Window *window){
 	text_layer_set_text_alignment(highscore_title, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_title));
 	
-	// import_highscores();
-	// write_highscores();
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "highscore_window_load()  calling create_single_highscore_string()");
 	create_single_highscore_string();
 
-	// strcpy(highscore_list_text, "Hallo");
 	highscore_text = text_layer_create(GRect(0,50,144,160));
-	//text_layer_set_text(highscore_text, "1. name  23\n2. name  9"); //"1. name  23\n2. name  9"
-	text_layer_set_text(highscore_text, highscore_list_text); //"1. name  23\n2. name  9"
+	text_layer_set_text(highscore_text, highscore_list_text);
 	text_layer_set_text_alignment(highscore_text, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_text));
 }
@@ -151,6 +168,7 @@ void highscore_window_unload(Window *window){
 
 void highscore_window_create(){
 	highscore_window = window_create();
+	window_set_click_config_provider(highscore_window, click_config_provider);
 	window_set_window_handlers(highscore_window, (WindowHandlers) {
 		.load = highscore_window_load,
 		.unload = highscore_window_unload

@@ -69,17 +69,8 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 			APP_LOG(APP_LOG_LEVEL_DEBUG, "player points:   %d", highscores[cntPlayersInHighscoreList].points);
 
 		}
-
-		// persist_write_string(1, username); // save current player name
-		// int user_points = 9; //hardcoded for now
-		// persist_write_int(2, user_points); // save current player points // needs to be saved after game
 		
-		//node_ptr user_data;
-		//user_data = create_node(username, user_points);
-		//highscore_list = NULL;
-		//insert_node(highscore_list, user_data);
-		
-		app_timer_register(2500, launch_highscore_window, NULL);
+		app_timer_register(500, launch_highscore_window, NULL);
 	} else {
 		charPosition ++;
 		setArrow();
