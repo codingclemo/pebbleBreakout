@@ -20,6 +20,7 @@ void import_highscores() {
 	cntPlayersInHighscoreList = 0; 
 	cntPlayersInHighscoreList = persist_read_int(HS_CNT_PLAYERS);
 
+//<<<<<<< use_global_variable_for_highscore
 	//names[1] = "wtf";
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
 		if (!persist_exists(HS_POINTS + i) || !persist_exists(HS_NAMES + i)) {
@@ -31,6 +32,29 @@ void import_highscores() {
 				APP_LOG(APP_LOG_LEVEL_ERROR, "Error READING from storage");
 			}
 		}
+//=======
+void import_highscores(){
+	char buffer[4];
+	int stored_points;
+	persist_write_string(103, "du3");
+	persist_write_int(113, 7);
+	
+	for (int i = 1; i <= HIGHSCORE_LENGTH; i++){
+		/* Get name */
+		if (persist_exists(100+i)) {
+			persist_read_string(100+i, buffer, sizeof(buffer));
+			names[i] = buffer;
+		} else {
+			//buffer = "ddd";
+			names[i] = "ddd";
+		}
+		//names[i] = buffer;
+		/* Get points */
+		stored_points = persist_exists(110+i) ? persist_read_int(110+i) : 0;	
+		//stored_points = persist_read_int(110+i);
+		snprintf(buffer, 10, "%d", stored_points);
+		points[i] = buffer;
+//>>>>>>> master
 	}
 
 	// TODO: REMOVE DEBUG ONLY - write data to APP LOG
