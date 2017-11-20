@@ -5,11 +5,11 @@
 
 #define MAX_BLOCKS 100
 
-#define DELTA_X_STEEP  2
-#define DELTA_Y_STEEP  5
+#define DELTA_X_STEEP  3
+#define DELTA_Y_STEEP  4
 
-#define DELTA_X_FLAT  3
-#define DELTA_Y_FLAT  4
+#define DELTA_X_FLAT  2
+#define DELTA_Y_FLAT  5
 
 static Window *game_window;
 static Layer *canvas_layer;
@@ -87,6 +87,13 @@ static void updateBallPosition() {
     
 }
 
+int sign(int32_t x) {
+    if (x > 0) 
+        return 1;
+    else   
+        return -1; 
+}
+
 static void checkBallThingiCollision() {
     // check if the user missed the ball
     if (ball.m_x > (moving_thingi.m_x - moving_thingi.w_2)) {
@@ -106,38 +113,46 @@ static void checkBallThingiCollision() {
                 // left zone
                 if (ball.m_y >= (moving_thingi.m_y + moving_thingi.h_2 / 2)) {
                     // left outer zone -> "flat" angle
+                    APP_LOG(APP_LOG_LEVEL_DEBUG, "LEFT OUTER  ZONE");
                     if (ball.direction.dy > 0) {
-                        ball.direction.dx *= -1;
-                    } else {
-                        ball.direction.dx *= -1;
-                        ball.direction.dy *= -1;
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_FLAT;
+                        ball.direction.dy =  sign(ball.direction.dy) * DELTA_Y_FLAT;
+                    } else { 
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_FLAT;
+                        ball.direction.dy = -sign(ball.direction.dy) * DELTA_Y_FLAT;
                     }
                 } else {
                     // left inner  zone -> "steep" angle
+                    APP_LOG(APP_LOG_LEVEL_DEBUG, "LEFT INNER  ZONE");
                     if (ball.direction.dy > 0) {
-                        ball.direction.dx *= -1;
-                    } else {
-                        ball.direction.dx *= -1;
-                        ball.direction.dy *= -1;
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_STEEP;
+                        ball.direction.dy =  sign(ball.direction.dy) * DELTA_Y_STEEP;
+                    } else { 
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_STEEP;
+                        ball.direction.dy = -sign(ball.direction.dy) * DELTA_Y_STEEP;
                     }
                 }
             } else {
                 // right zone
                 if (ball.m_y <= (moving_thingi.m_y - moving_thingi.h_2 / 2)) {
-                    // left outer zone -> "flat" angle
-                    if (ball.direction.dy > 0) {
-                        ball.direction.dx *= -1;
-                        ball.direction.dy *= -1;
+                    APP_LOG(APP_LOG_LEVEL_DEBUG, "RIGHT OUTER ZONE");
+                    // right outer zone -> "flat" angle
+                    if (ball.direction.dy > 0) { 
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_FLAT;
+                        ball.direction.dy = -sign(ball.direction.dy) * DELTA_Y_FLAT;
                     } else {
-                        ball.direction.dx *= -1;
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_FLAT;
+                        ball.direction.dy = sign(ball.direction.dy) * DELTA_Y_FLAT;
                     }
                 } else {
                     // right inner  zone -> "steep" angle
-                    if (ball.direction.dy > 0) {
-                        ball.direction.dx *= -1;
-                        ball.direction.dy *= -1;
+                    APP_LOG(APP_LOG_LEVEL_DEBUG, "RIGHT INNER  ZONE");
+                    if (ball.direction.dy > 0) { 
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_STEEP;
+                        ball.direction.dy = -sign(ball.direction.dy) * DELTA_Y_STEEP;
                     } else {
-                        ball.direction.dx *= -1;
+                        ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_STEEP;
+                        ball.direction.dy = sign(ball.direction.dy) * DELTA_Y_STEEP;
                     }
                 }
             }
@@ -151,7 +166,6 @@ static void checkBallThingiCollision() {
 static void checkBallBlockCollision() {
     for (int i = 0; i < cnt_blocks; i++) {
         if (blocks[i].visible) {
-            APP_LOG(APP_LOG_LEVEL_DEBUG, "draw_checkBallBlockCollision   checking collision with block %d", i);
             if ((ball.m_x <= (blocks[i].x + blocks[i].w + ball.r)) &&
                 (ball.m_y > blocks[i].y) &&
                 (ball.m_y < (blocks[i].y + blocks[i].h)) &&
@@ -241,6 +255,9 @@ static void draw_blocks(Layer *layer, GContext *ctx) {
 
 static void canvas_update_proc(Layer *layer, GContext *ctx) {
     // APP_LOG(APP_LOG_LEVEL_DEBUG, "canvas_update_proc");
+
+    graphics_context_set_fill_color(ctx, GColorChromeYellow);
+    graphics_fill_rect(ctx, board, 0, GCornerNone);
 
     draw_moving_thingi(layer, ctx);
     draw_ball(layer, ctx);
@@ -349,14 +366,14 @@ static void game_window_load(Window *window) {
     // vertically centered
 
     moving_thingi.w_2 = 4;
-    moving_thingi.h_2 = 28;
+    moving_thingi.h_2 = 32;
     moving_thingi.m_x = board.size.w - 6 - moving_thingi.w_2;
     moving_thingi.m_y = board.size.h / 2;
     
     moving_thingi.color = GColorRed;
 
-    // initlaize our ball
-    ball.r = 3; 
+    // initialize our ball
+    ball.r = 2; 
     ball.m_x = moving_thingi.m_x - moving_thingi.w_2 - ball.r; 
     ball.m_y = moving_thingi.m_y; 
     ball.color = GColorGreen;
