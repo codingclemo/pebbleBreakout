@@ -23,9 +23,6 @@ int main(){
 	app_timer_register(1000, launch_initials_window, NULL); // sets display time for splash window before starting initials window
 	
 	// load highscores, before a new game starts	
-				//for testing
-				persist_write_string(103, "du3");
-				persist_write_int(113, 7);
 	import_highscores();
 	
 	/* Keep the app running */

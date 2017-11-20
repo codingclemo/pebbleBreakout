@@ -11,4 +11,6 @@ typedef struct GameResult {
 
 GameResult highscores[HIGHSCORE_LENGTH];
 int cntPlayersInHighscoreList; 
+int current_player_points;
+char current_player_name[5];
 

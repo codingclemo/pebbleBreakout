@@ -46,9 +46,20 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		text_layer_set_text(initials_title, "Name saved!");
 		text_layer_set_text_color(user_initials, GColorRed);
 		text_layer_destroy(indicator);
+		
 		/* save the name and score in Highscore list */
-
+		current_player_points = 12 + cntPlayersInHighscoreList;
+		for(int j = 0; j < 3; j++) {
+			current_player_name[j] = username[j];
+		}
+		current_player_name[4] = '\0';
+		/*
 		// TODO: insert sorted by points
+		for (int k = 0; k < HIGHSCORE_LENGTH) {
+			if (highscores[k].points)
+		}
+		
+		
 		if (cntPlayersInHighscoreList < HIGHSCORE_LENGTH) {
 			cntPlayersInHighscoreList++;
 
@@ -62,14 +73,13 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 			highscores[cntPlayersInHighscoreList].name[4] = '\0';
 
 			// dummy value 
-			highscores[cntPlayersInHighscoreList].points = 12;
+			highscores[cntPlayersInHighscoreList].points = 12 + cntPlayersInHighscoreList;
 
 			APP_LOG(APP_LOG_LEVEL_DEBUG, "initals final values: ");
 			APP_LOG(APP_LOG_LEVEL_DEBUG, "player name:   %s", highscores[cntPlayersInHighscoreList].name);
 			APP_LOG(APP_LOG_LEVEL_DEBUG, "player points:   %d", highscores[cntPlayersInHighscoreList].points);
-
 		}
-		
+		*/
 		app_timer_register(500, launch_highscore_window, NULL);
 	} else {
 		charPosition ++;

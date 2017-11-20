@@ -23,6 +23,10 @@ void import_highscores() {
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
 		if (!persist_exists(HS_POINTS + i) || !persist_exists(HS_NAMES + i)) {
 			APP_LOG(APP_LOG_LEVEL_ERROR, "Error: there should be points/names in the storage");
+			//persist_write_int(HS_POINTS + i, 9);
+			//persist_write_data(HS_NAMES + i, "dum", 4);
+			//highscores[i].points = 0;
+			//highscores[i].name[0] = 'd'; highscores[i].name[1] = '\0';
 		} else {
 			highscores[i].points = persist_read_int(HS_POINTS + i);
 			int result = persist_read_data(HS_NAMES + i, &highscores[i].name, 4);
@@ -36,6 +40,32 @@ void import_highscores() {
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Player name %s, points: %d", highscores[i].name, highscores[i].points);
 	}
+}
+
+void insert_new_score() {
+	//GameResult temp_list[HIGHSCORE_LENGTH];
+	for (int i = 0; i < cntPlayersInHighscoreList; i++) {
+		if (highscores[i].points < current_player_points) {
+			// increase length of highscore list if necessary
+			if (cntPlayersInHighscoreList < HIGHSCORE_LENGTH) { cntPlayersInHighscoreList++; }
+			// decrease position of players with lower score
+			for (int j = cntPlayersInHighscoreList -1; j > i; j--) {
+				highscores[j].points = highscores[j-1].points;
+				for(int k = 0; k < 3; k++) {
+					highscores[j].name[k] = current_player_name[k];
+				}
+				highscores[j].name[4] = '\0';
+			}
+			// insert new score and playername
+			highscores[i].points = current_player_points;
+			for(int k = 0; k < 3; k++) {
+				highscores[i].name[k] = current_player_name[k];
+			}
+			highscores[i].name[4] = '\0';
+			i = cntPlayersInHighscoreList; // exit for loop
+		}
+	}
+	
 }
 
 void create_single_highscore_string() {
@@ -81,7 +111,7 @@ void write_highscores(){
 
 	for (int i = 0; i <= cntPlayersInHighscoreList; i++) {
 		persist_write_int(HS_POINTS + i, highscores[i].points);
-		persist_write_data(HS_NAMES, &highscores[i].name, 4);
+		persist_write_data(HS_NAMES + i, &highscores[i].name, 4);
 	}
 }
 
@@ -123,6 +153,7 @@ void highscore_window_load(Window *window){
 	layer_add_child(window_layer, text_layer_get_layer(highscore_title));
 	
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "highscore_window_load()  calling create_single_highscore_string()");
+	insert_new_score();
 	create_single_highscore_string();
 	write_highscores();
 	
