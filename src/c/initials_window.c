@@ -14,8 +14,9 @@ char username[] = "aaa";
 int charPosition = 0;
 char arrow[] = "^     ";
 const int arrowLength = sizeof(arrow);
-void initials_window_unload(Window *window);
 
+//TODO - can be removed? if the compiler doesnt show us a warning?
+// void initials_window_unload(Window *window);
 
 void setArrow(){
 	for (int i = 0; i < arrowLength; i++){
@@ -51,7 +52,7 @@ void insert_new_score(char *name, int points) {
 	while (highscores[idx].points > points && idx < HIGHSCORE_LENGTH && idx <= cntPlayersInHighscoreList)  {
 		idx++; 
 	}
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' idx= %d     cntPlayersInHighscoreList = %d   ", idx, cntPlayersInHighscoreList);
+	// APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' idx= %d     cntPlayersInHighscoreList = %d   ", idx, cntPlayersInHighscoreList);
 
 	if (idx >= HIGHSCORE_LENGTH) {
 		// we only have room for 5 highscores - we are done here (play better next time buddy!)
@@ -60,8 +61,8 @@ void insert_new_score(char *name, int points) {
 	// if the new score is the last entry in the array, we dont have to move
 	// the other entries - otherwise: move all entries down by 1
 	for (int i = HIGHSCORE_LENGTH-2; i >= idx; i--) {
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' moving entry i = %d down to i+1 = %d  ", i, i+1);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' moving name %s down ", highscores[i].name);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' moving entry i = %d down to i+1 = %d  ", i, i+1);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'insert_new_score' moving name %s down ", highscores[i].name);
 
 		highscores[i+1].points = highscores[i].points;
 		for (int m = 0; m < 3; m++) {
@@ -88,9 +89,9 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		/* save the name and score in Highscore list */
 		// TODO remove this line, when the game is finally implemented 
 		current_player_points = 12 + cntPlayersInHighscoreList;
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' insert new highscore with  username:   %s", username);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' and points =   %d", current_player_points);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' cntPlayersInHighscoreList =   %d", cntPlayersInHighscoreList);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' insert new highscore with  username:   %s", username);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' and points =   %d", current_player_points);
+		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' cntPlayersInHighscoreList =   %d", cntPlayersInHighscoreList);
 
 		insert_new_score(username, current_player_points);
 

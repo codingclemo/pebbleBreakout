@@ -3,7 +3,7 @@
 #include "initials_window.h"
 #include "highscore_window.h"
 #include "main.h"
-
+#include "game.h"
 
 GameResult highscores[HIGHSCORE_LENGTH];
 int cntPlayersInHighscoreList; 
@@ -13,6 +13,10 @@ char current_player_name[5];
 
 void launch_initials_window(){
 	window_stack_push(initials_window_get_window(), true);
+}
+
+void launch_game_window(){
+	window_stack_push(game_window_get_window(), true);
 }
 
 int main() {
@@ -25,8 +29,11 @@ int main() {
 	splash_window_create();
 
 	initials_window_create(); // creates highscore_window before unloading	
+
+	game_window_create();
+
 	window_stack_push(splash_window_get_window(), true);
-	app_timer_register(100, launch_initials_window, NULL); // sets display time for splash window before starting initials window
+	app_timer_register(100, launch_game_window, NULL); // sets display time for splash window before starting initials window
 
 	// load highscores, before a new game starts	
 	import_highscores();
