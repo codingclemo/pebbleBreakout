@@ -97,7 +97,6 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		insert_new_score(username, current_player_points);
 
 		app_timer_register(TIMEOUT_HIGHSCORE_SCREEN, launch_highscore_window, NULL);
-
 	} else {
 		charPosition ++;
 		setArrow();

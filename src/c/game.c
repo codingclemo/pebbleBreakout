@@ -84,9 +84,7 @@ static void updateBallPosition() {
         ball.m_y = board.origin.y + board.size.h;
         ball.direction.dy *= -1; 
     }
-
-    // check if ball.m_y > board.size.y is not necessary - thats done in "checkBallThingiCollision"
-    
+    // check if ball.m_y > board.size.y is not necessary - thats done in "checkBallThingiCollision"    
 }
 
 int sign(int32_t x) {
@@ -115,7 +113,6 @@ static void checkBallThingiCollision() {
                 // left zone
                 if (ball.m_y >= (moving_thingi.m_y + moving_thingi.h_2 / 2)) {
                     // left outer zone -> "flat" angle
-                    APP_LOG(APP_LOG_LEVEL_DEBUG, "LEFT OUTER  ZONE");
                     if (ball.direction.dy > 0) {
                         ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_FLAT;
                         ball.direction.dy =  sign(ball.direction.dy) * DELTA_Y_FLAT;
@@ -125,7 +122,6 @@ static void checkBallThingiCollision() {
                     }
                 } else {
                     // left inner  zone -> "steep" angle
-                    APP_LOG(APP_LOG_LEVEL_DEBUG, "LEFT INNER  ZONE");
                     if (ball.direction.dy > 0) {
                         ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_STEEP;
                         ball.direction.dy =  sign(ball.direction.dy) * DELTA_Y_STEEP;
@@ -137,7 +133,6 @@ static void checkBallThingiCollision() {
             } else {
                 // right zone
                 if (ball.m_y <= (moving_thingi.m_y - moving_thingi.h_2 / 2)) {
-                    APP_LOG(APP_LOG_LEVEL_DEBUG, "RIGHT OUTER ZONE");
                     // right outer zone -> "flat" angle
                     if (ball.direction.dy > 0) { 
                         ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_FLAT;
@@ -148,7 +143,6 @@ static void checkBallThingiCollision() {
                     }
                 } else {
                     // right inner  zone -> "steep" angle
-                    APP_LOG(APP_LOG_LEVEL_DEBUG, "RIGHT INNER  ZONE");
                     if (ball.direction.dy > 0) { 
                         ball.direction.dx = -sign(ball.direction.dx) * DELTA_X_STEEP;
                         ball.direction.dy = -sign(ball.direction.dy) * DELTA_Y_STEEP;
@@ -158,12 +152,10 @@ static void checkBallThingiCollision() {
                     }
                 }
             }
-            //ball.direction.dx *= -1;
             score--;
         }
     }
 }
-
 
 static void checkBallBlockCollision() {
     for (int i = 0; i < cnt_blocks; i++) {
@@ -173,7 +165,7 @@ static void checkBallBlockCollision() {
                 (ball.m_y < (blocks[i].y + blocks[i].h)) &&
                 ball.direction.dx < 0) {
                 
-                // if the ball touches the block, then reflect  the ball
+                // if the ball touches the block, then reflect the ball
                 // and hide the block
                 ball.direction.dx *= -1;
                 blocks[i].visible = false; 
@@ -184,18 +176,11 @@ static void checkBallBlockCollision() {
 
 void launch_initials_window(){
 	initials_window_create();
-	// window_stack_pop();
+	window_stack_pop(false);
 	window_stack_push(initials_window_get_window(), true);
 }
 
 static void refresh(void *data) {
-    // check if game is over?
-    //   if (game_is_over || is_game_over()) {
-    //     game_over();
-    //     return;
-    //   }
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "refresh");
-    
     if (game_status == Running) {
         updateBallPosition();
         checkBallThingiCollision();
@@ -410,8 +395,8 @@ static void game_window_load(Window *window) {
     // create some blocks we have to "hit"
     init_blocks();
 
-    // score is 103 to start with
-    score = 103; 
+    // score is 104 to start with
+    score = 104; 
 
     // register timer
     timer = app_timer_register(tick_ms, refresh, NULL);
@@ -449,3 +434,7 @@ void game_window_create() {
 	});
 }
 
+void launch_game_window() {
+	window_stack_pop(false);
+	window_stack_push(game_window_get_window(), true);
+}

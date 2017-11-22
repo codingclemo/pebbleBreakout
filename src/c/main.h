@@ -4,9 +4,9 @@
 
 #define HIGHSCORE_LENGTH 5
 
-#define TIMEOUT_SPLASH_SCREEN 10   // 3000
-#define TIMEOUT_INITIALS_SCREEN 10   // 1000
-#define TIMEOUT_HIGHSCORE_SCREEN 10   // 500
+#define TIMEOUT_SPLASH_SCREEN 2000   // 3000
+#define TIMEOUT_INITIALS_SCREEN 2000   // 1000
+#define TIMEOUT_HIGHSCORE_SCREEN 2000  // 500
 
 typedef struct GameResult {
     char name[5];

@@ -5,6 +5,7 @@
 #include "highscore_window.h"
 #include "initials_window.h"
 #include "main.h"
+#include "game.h"
 
 #define HS_CNT_PLAYERS 90
 #define HS_NAMES 100
@@ -112,30 +113,32 @@ void write_highscores() {
 	}
 }
 
-
-
 /*** Click any button to exit program ***/
-static void back_click_handler(ClickRecognizerRef recognizer, void *context) {
-	highscore_window_destroy();
-}
+// static void back_click_handler(ClickRecognizerRef recognizer, void *context) {
+// 	// highscore_window_destroy();
+// 	app_timer_register(10, launch_game_window, NULL);
+// }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-	highscore_window_destroy();
+	// highscore_window_destroy();
+	app_timer_register(10, launch_game_window, NULL);
 }
 
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-	highscore_window_destroy();
-}
+// static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
+// 	// highscore_window_destroy();
+// 	app_timer_register(10, launch_game_window, NULL);
+// }
 
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-	highscore_window_destroy();
-}
+// static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
+// 	// highscore_window_destroy();
+// 	app_timer_register(10, launch_game_window, NULL);
+// }
 
 static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
+  //window_single_click_subscribe(BUTTON_ID_BACK, back_click_handler);
   window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
+  //window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
+  //window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 } 
 
 /*** Window handling ***/
@@ -158,7 +161,6 @@ void highscore_window_load(Window *window){
 	text_layer_set_text(highscore_text, highscore_list_text);
 	text_layer_set_text_alignment(highscore_text, GTextAlignmentCenter);
 	layer_add_child(window_layer, text_layer_get_layer(highscore_text));
-
 }
 
 void highscore_window_unload(Window *window){

@@ -6,15 +6,16 @@
 #include "game.h"
 
 GameResult highscores[HIGHSCORE_LENGTH];
+
 int cntPlayersInHighscoreList; 
 int current_player_points;
 char current_player_name[5];
 
 
-
-void launch_game_window(){
-	window_stack_push(game_window_get_window(), true);
-}
+// void launch_game_window() {
+// 	window_stack_pop(false);
+// 	window_stack_push(game_window_get_window(), true);
+// }
 
 int main() {
 	cntPlayersInHighscoreList = -1;
