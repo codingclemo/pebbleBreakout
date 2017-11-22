@@ -6,7 +6,3 @@ Window *highscore_window_get_window();
 
 void import_highscores();
 void write_highscores();
-
-
-// TODO remove
-void DEBUG_ARRAY();

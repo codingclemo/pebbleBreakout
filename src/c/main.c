@@ -11,12 +11,6 @@ int cntPlayersInHighscoreList;
 int current_player_points;
 char current_player_name[5];
 
-
-// void launch_game_window() {
-// 	window_stack_pop(false);
-// 	window_stack_push(game_window_get_window(), true);
-// }
-
 int main() {
 	cntPlayersInHighscoreList = -1;
 
@@ -25,8 +19,6 @@ int main() {
 	
 	/* Create windows */
 	splash_window_create();
-
-// initials_window_create(); // creates highscore_window before unloading	
 
 	game_window_create();
 
@@ -38,8 +30,6 @@ int main() {
 	
 	/* Keep the app running */
 	app_event_loop();
-
-	/* save highscores in highscore_window_load */
 
 	/* Close windows */
 	splash_window_destroy();

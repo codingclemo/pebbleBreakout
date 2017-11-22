@@ -218,7 +218,6 @@ static void refresh(void *data) {
 
     if ((game_status == Finished) || (game_status == GameWon)) {
         // show the window where the player can enter his/her initials
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "'refresh()'  launching initials window");
         // set global variable with the score
         current_player_points = score; 
         app_timer_register(TIMEOUT_INITIALS_SCREEN, launch_initials_window, NULL);
@@ -231,9 +230,6 @@ static void refresh(void *data) {
 }
 
 static void draw_moving_thingi(Layer *layer, GContext *ctx) {
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "draw_moving_thingi");
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "m_x = %d, m_y = %d, w_2 = %d, h_2 = %d", moving_thingi.m_x, moving_thingi.m_y, moving_thingi.w_2, moving_thingi.h_2 );
-
     graphics_context_set_fill_color(ctx, moving_thingi.color);
     GRect rect_bounds = GRect(moving_thingi.m_x - moving_thingi.w_2, moving_thingi.m_y - moving_thingi.h_2, 
                               2* moving_thingi.w_2, 2 * moving_thingi.h_2);
@@ -242,9 +238,6 @@ static void draw_moving_thingi(Layer *layer, GContext *ctx) {
 }
 
 static void draw_ball(Layer *layer, GContext *ctx) {
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "draw_ball");
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "m_x = %d, m_y = %d, r = %d", ball.m_x, ball.m_y, ball.r);
-
     graphics_context_set_fill_color(ctx, ball.color);
     graphics_fill_circle(ctx, GPoint(ball.m_x, ball.m_y), ball.r);
 }
@@ -260,8 +253,6 @@ static void draw_blocks(Layer *layer, GContext *ctx) {
 }
 
 static void canvas_update_proc(Layer *layer, GContext *ctx) {
-    // APP_LOG(APP_LOG_LEVEL_DEBUG, "canvas_update_proc");
-
     graphics_context_set_fill_color(ctx, GColorChromeYellow);
     graphics_fill_rect(ctx, board, 0, GCornerNone);
 
@@ -271,19 +262,14 @@ static void canvas_update_proc(Layer *layer, GContext *ctx) {
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "SELECT clicked!");
     if (game_status == NotStarted) {
         game_status = Running;
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "SELECT clicked and game_status set to RUNINNG");
     }
 }
 
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "UP clicked!");
     if (game_status == Running) {
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "UP clicked   - game is running - moving thingi");
         moving_thingi.m_y -= DELTA_Y_MOVING_THINGI;
-
         if (moving_thingi.m_y - moving_thingi.h_2 <= 0) {
             moving_thingi.m_y = moving_thingi.h_2;
         }
@@ -291,13 +277,8 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "DOWN clicked!");
-    
-    // layer_mark_dirty(canvas_layer);
     if (game_status == Running) {
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "DOWN clicked   - game is running - moving thingi");
         moving_thingi.m_y += DELTA_Y_MOVING_THINGI;
-
         if (moving_thingi.m_y + moving_thingi.h_2 >= board.size.h) {
             moving_thingi.m_y = board.size.h - moving_thingi.h_2;
         }
@@ -311,7 +292,7 @@ static void game_click_config_provider(void *context) {
 }
 
 static void init_blocks() {
-    // add 2 blocks for starters 
+    // add 4 blocks 
     int margin = 5; 
     int width = 10; 
 
@@ -346,12 +327,7 @@ static void init_blocks() {
 }
 
 static void game_window_load(Window *window) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "'game_window_load'   ");
-
     int height_info_layer = 20;
-
-    // TODO: Cleanup and destroy everything created !!!
-
 
     // our game baords
     Layer *window_layer = window_get_root_layer(window);
@@ -392,7 +368,7 @@ static void game_window_load(Window *window) {
     // game status: ist notStarted, start with select Button
     game_status = NotStarted; 
 
-    // create some blocks we have to "hit"
+    // create some blocks we have to hit
     init_blocks();
 
     // score is 104 to start with
@@ -403,8 +379,6 @@ static void game_window_load(Window *window) {
 }
 
 static void game_window_unload(Window *window) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "window unload!");
-
     text_layer_destroy(info_layer);
     layer_destroy(canvas_layer);
 
@@ -419,13 +393,10 @@ Window *game_window_get_window() {
 }
 
 void game_window_destroy() {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "'game_window_destroy'   ");
 	window_destroy(game_window);
 }
 
 void game_window_create() {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "'game_window_create'   ");
-
 	game_window = window_create();
 	window_set_click_config_provider(game_window, game_click_config_provider);
 	window_set_window_handlers(game_window, (WindowHandlers) {
