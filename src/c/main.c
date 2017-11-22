@@ -11,9 +11,6 @@ int current_player_points;
 char current_player_name[5];
 
 
-void launch_initials_window(){
-	window_stack_push(initials_window_get_window(), true);
-}
 
 void launch_game_window(){
 	window_stack_push(game_window_get_window(), true);
@@ -28,12 +25,12 @@ int main() {
 	/* Create windows */
 	splash_window_create();
 
-	initials_window_create(); // creates highscore_window before unloading	
+// initials_window_create(); // creates highscore_window before unloading	
 
 	game_window_create();
 
 	window_stack_push(splash_window_get_window(), true);
-	app_timer_register(100, launch_game_window, NULL); // sets display time for splash window before starting initials window
+	app_timer_register(TIMEOUT_SPLASH_SCREEN, launch_game_window, NULL); // sets display time for splash window before starting initials window
 
 	// load highscores, before a new game starts	
 	import_highscores();
@@ -47,6 +44,7 @@ int main() {
 	splash_window_destroy();
 	initials_window_destroy();
 	highscore_window_destroy();
+	game_window_destroy();
 	
 	/* Turn of the lights */
 	light_enable(false);

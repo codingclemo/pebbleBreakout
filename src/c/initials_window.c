@@ -27,6 +27,7 @@ void setArrow(){
 
 void launch_highscore_window(){
 	highscore_window_create();
+	// window_stack_pop();
 	window_stack_push(highscore_window_get_window(), true);
 }
 
@@ -84,18 +85,18 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 		/* adapt display */
 		text_layer_set_text(initials_title, "Name saved!");
 		text_layer_set_text_color(user_initials, GColorRed);
-		text_layer_destroy(indicator);
+		// text_layer_destroy(indicator);
 		
 		/* save the name and score in Highscore list */
 		// TODO remove this line, when the game is finally implemented 
-		current_player_points = 12 + cntPlayersInHighscoreList;
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' insert new highscore with  username:   %s", username);
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' and points =   %d", current_player_points);
-		// APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' cntPlayersInHighscoreList =   %d", cntPlayersInHighscoreList);
+		// current_player_points = 12 + cntPlayersInHighscoreList;
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' insert new highscore with  username:   %s", username);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' and points =   %d", current_player_points);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "'select_click_handler' cntPlayersInHighscoreList =   %d", cntPlayersInHighscoreList);
 
 		insert_new_score(username, current_player_points);
 
-		app_timer_register(500, launch_highscore_window, NULL);
+		app_timer_register(TIMEOUT_HIGHSCORE_SCREEN, launch_highscore_window, NULL);
 
 	} else {
 		charPosition ++;

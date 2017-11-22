@@ -1,7 +1,9 @@
 #include <pebble.h>
 #include "game.h"
+#include "main.h"
+#include "initials_window.h"
 
-#define DELTA_Y_MOVING_THINGI  24
+#define DELTA_Y_MOVING_THINGI  20
 
 #define MAX_BLOCKS 100
 
@@ -15,7 +17,7 @@ static Window *game_window;
 static Layer *canvas_layer;
 static TextLayer *info_layer;
 
-static const uint32_t tick_ms = 100;
+static const uint32_t tick_ms = 50;
 static AppTimer *timer = NULL;
 
 static void refresh(void *data);
@@ -180,13 +182,20 @@ static void checkBallBlockCollision() {
     }
 }
 
+void launch_initials_window(){
+	initials_window_create();
+	// window_stack_pop();
+	window_stack_push(initials_window_get_window(), true);
+}
+
 static void refresh(void *data) {
     // check if game is over?
     //   if (game_is_over || is_game_over()) {
     //     game_over();
     //     return;
     //   }
-    timer = app_timer_register(tick_ms, refresh, NULL);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "refresh");
+    
     if (game_status == Running) {
         updateBallPosition();
         checkBallThingiCollision();
@@ -206,12 +215,13 @@ static void refresh(void *data) {
         }
 
         // if the game is running: show the points in the info layer
-        snprintf(score_text, sizeof(score_text), "%11llu", score);
+        snprintf(score_text, sizeof(score_text), "%3llu", score);
         text_layer_set_text(info_layer, score_text);
     }
     if (game_status == Finished) {
         strcpy(score_text, "Game Over!");
         text_layer_set_text(info_layer, score_text);
+        score = 0; 
     }
     if (game_status == GameWon) {
         char tmp[100];
@@ -220,6 +230,17 @@ static void refresh(void *data) {
         strcat(score_text, tmp);
         text_layer_set_text(info_layer, score_text);
     }
+
+    if ((game_status == Finished) || (game_status == GameWon)) {
+        // show the window where the player can enter his/her initials
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "'refresh()'  launching initials window");
+        // set global variable with the score
+        current_player_points = score; 
+        app_timer_register(TIMEOUT_INITIALS_SCREEN, launch_initials_window, NULL);
+    } else {
+        timer = app_timer_register(tick_ms, refresh, NULL);
+    }
+
    // redraw the canvas
    layer_mark_dirty(canvas_layer);
 }
@@ -344,6 +365,9 @@ static void game_window_load(Window *window) {
 
     int height_info_layer = 20;
 
+    // TODO: Cleanup and destroy everything created !!!
+
+
     // our game baords
     Layer *window_layer = window_get_root_layer(window);
     GRect bounds = layer_get_bounds(window_layer);
@@ -386,58 +410,36 @@ static void game_window_load(Window *window) {
     // create some blocks we have to "hit"
     init_blocks();
 
-    // score is 100 to start with
-    score = 100; 
+    // score is 103 to start with
+    score = 103; 
 
     // register timer
     timer = app_timer_register(tick_ms, refresh, NULL);
 }
 
 static void game_window_unload(Window *window) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "window unload!");
+
+    text_layer_destroy(info_layer);
+    layer_destroy(canvas_layer);
+
     if (timer != NULL) {
         app_timer_cancel(timer);
         timer = NULL;
     }
 }
 
-// static void init(void) {
-//   game_window = window_create();
-//   window_set_click_config_provider(game_window, click_config_provider);
-//   window_set_window_handlers(game_window, (WindowHandlers) {
-//     .load = window_load,
-//     .unload = window_unload,
-//   });
-//   light_enable(true);
-// }
-
-// static void deinit(void) {
-//   window_destroy(window);
-//   light_enable(false);
-// }
-
-// int main(void) {
-//   init();
-
-//   APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window);
-
-//   app_event_loop();
-//   deinit();
-// }
-
-
-
-Window *game_window_get_window(){
+Window *game_window_get_window() {
 	return game_window;
 }
 
-void game_window_destroy(){
+void game_window_destroy() {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "'game_window_destroy'   ");
 	window_destroy(game_window);
 }
 
 void game_window_create() {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "'game_window_create'   ");
-
-
 
 	game_window = window_create();
 	window_set_click_config_provider(game_window, game_click_config_provider);
